@@ -1,0 +1,25 @@
+{
+  "name": "bakcend-lab",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/bun": "latest",
+    "@types/node": "^26.6.2",
+    "prisma": "^7.10.0"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.5",
+    "@prisma/adapter-mariadb": "^7.10.0",
+    "@prisma/client": "7",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.1",
+    "hono": "^4.13.8",
+    "hono-rate-limiter": "^0.5.4",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.5"
+  }
+}

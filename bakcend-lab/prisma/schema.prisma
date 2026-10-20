@@ -1,0 +1,168 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Roles { 
+  teknisi 
+  guru 
+  siswa 
+}
+
+enum Status {
+  aktif
+  nonaktif
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  name String?
+  role Roles
+  status Status
+  token String? 
+
+  jadwalLab JadwalLab[]
+  createdSlots JadwalSlot[] @relation("SlotCreator")
+  bookedSlots JadwalSlot[] @relation("SlotBooker")
+  createdRutins JadwalRutin[] @relation("RutinCreator")
+
+  @@map("users")
+}
+
+enum Kondisi {
+  bagus
+  rusak
+}
+
+model Laboratorium {
+  id Int @id @default(autoincrement())
+  kode String @unique
+  nama  String
+  lokasi  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inventories Inventory[]
+  jadwalLab   JadwalLab[]
+  slots       JadwalSlot[]
+  rutins      JadwalRutin[]
+
+  @@map("laboratorium")
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  nama String @unique
+  jumlah  Int 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inventories Inventory[]
+
+  @@map("category")
+}
+
+model Inventory {
+  id Int @id @default(autoincrement())
+  kode String @unique
+  nama  String
+  kondisi Kondisi
+  tanggalbeli DateTime
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+
+  laboratoriumId Int
+  laboratorium   Laboratorium @relation(fields: [laboratoriumId], references: [id], onDelete: Restrict)
+
+  categoryId Int
+  category  Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+}
+
+enum StatusJadwal {
+  BELUM_MULAI
+  BATAL
+  DALAM_SESI
+  SELESAI
+}
+
+model JadwalLab {
+  id Int @id @default(autoincrement()) 
+  kegiatan  String
+  tglmulai  DateTime
+  tglselesai  DateTime
+  status       StatusJadwal @default(BELUM_MULAI)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  laboratoriumId Int
+  laboratorium   Laboratorium @relation(fields: [laboratoriumId], references: [id], onDelete: Cascade)
+
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("jadwal_lab")
+}
+
+enum StatusSlot {
+  TERSEDIA
+  DIBOOKING
+  BATAL
+}
+
+model JadwalRutin {
+  id Int @id @default(autoincrement())
+  jamMulai String
+  jamSelesai String
+  catatan String?
+  aktif Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  laboratoriumId Int
+  laboratorium Laboratorium @relation(fields: [laboratoriumId], references: [id], onDelete: Cascade)
+
+  createdById Int
+  createdBy User @relation("RutinCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  slots JadwalSlot[]
+
+  @@map("jadwal_rutin")
+}
+
+model JadwalSlot {
+  id Int @id @default(autoincrement())
+  catatan String?
+  tglmulai DateTime
+  tglselesai DateTime
+  status StatusSlot @default(TERSEDIA)
+  bookedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  laboratoriumId Int
+  laboratorium Laboratorium @relation(fields: [laboratoriumId], references: [id], onDelete: Cascade)
+
+  createdById Int
+  createdBy User @relation("SlotCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  bookedById Int?
+  bookedBy User? @relation("SlotBooker", fields: [bookedById], references: [id], onDelete: SetNull)
+
+  rutinId Int?
+  rutin JadwalRutin? @relation(fields: [rutinId], references: [id], onDelete: SetNull)
+
+  @@map("jadwal_slot")
+}

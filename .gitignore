@@ -1,0 +1,176 @@
+# ============================================================
+# .gitignore — Laboratorium Schedule
+# File & folder sensitif TIDAK boleh masuk repository.
+# ============================================================
+
+# ------------------------------------------------------------
+# 1. Kredensial / Environment Variables
+# ------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!.env.prod.example
+
+# File konfigurasi lokal yang sering memuat secret
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+
+# ------------------------------------------------------------
+# 2. Kunci, Sertifikat, dan Kredensial
+# ------------------------------------------------------------
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.jks
+*.keystore
+*.gpg
+*.asc
+id_rsa*
+id_ed25519*
+*credential*.json
+*credentials*.json
+*secret*.json
+*secret*.env
+*secrets*.env
+secrets.yml
+secrets.yaml
+
+# ------------------------------------------------------------
+# 3. Database, Dump, dan Backup
+# ------------------------------------------------------------
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.mdb
+*.dump
+*.sql.gz
+*.sql.bak
+*.bak
+*.backup
+*.old
+backup/
+backups/
+dumps/
+
+# ------------------------------------------------------------
+# 4. Log dan File Runtime
+# ------------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+bun-debug.log*
+*.pid
+*.pid.lock
+*.seed
+*.stackdump
+
+# ------------------------------------------------------------
+# 5. Dokumentasi (semua dokumentasi diabaikan)
+# ------------------------------------------------------------
+*.md
+*.MD
+*.markdown
+*.rst
+*.adoc
+docs/
+**/docs/
+dokumentasi/
+**/dokumentasi/
+*.pdf
+*.doc
+*.docx
+*.odt
+
+# Jika ingin README tetap di-commit, hapus tanda # pada baris berikut:
+# !README.md
+# !*/README.md
+# !**/README.md
+
+# ------------------------------------------------------------
+# 6. Dependency & Build Output
+# ------------------------------------------------------------
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+dist-ssr/
+out/
+build/
+**/build/
+*.tgz
+*.tar
+*.tar.gz
+*.zip
+
+# Prisma generated client
+bakcend-lab/generated/
+**/generated/prisma/
+
+# ------------------------------------------------------------
+# 7. Cache & Test
+# ------------------------------------------------------------
+.cache/
+.eslintcache
+*.tsbuildinfo
+coverage/
+*.lcov
+.nyc_output/
+.vite/
+.turbo/
+
+# ------------------------------------------------------------
+# 8. Editor / IDE (bisa memuat path & kredensial DB)
+# ------------------------------------------------------------
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ------------------------------------------------------------
+# 9. OS
+# ------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ------------------------------------------------------------
+# 10. Tooling agen AI (berisi instruksi/skill internal)
+# ------------------------------------------------------------
+.agents/
+.claude/
+.windsurf/
+**/.agents/
+**/.claude/
+**/.windsurf/
+
+# ------------------------------------------------------------
+# 11. Upload / File buatan pengguna
+# ------------------------------------------------------------
+uploads/
+**/uploads/
+storage/
+**/storage/
+*.tmp
+*.temp

@@ -1,0 +1,82 @@
+# Production: lab.smkmiftahulkhaer.my.id (frontend) + api.smkmiftahulkhaer.my.id (backend)
+# Cara pakai di VPS:
+#   cp .env.prod.example .env   (isi kredensial DB + nama image Docker Hub)
+#   docker compose up -d --build
+#
+# Workflow registry (Docker Hub):
+#   1. docker login
+#   2. docker compose build backend frontend   (nge-tag sesuai BACKEND_IMAGE / FRONTEND_IMAGE)
+#   3. docker compose push backend frontend
+#   4. Di VPS: docker compose pull backend frontend && docker compose up -d  (tanpa --build)
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: ${BACKEND_IMAGE:-laboratorium-schedule-backend:latest}
+    build: ./bakcend-lab
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # Untuk Prisma CLI (migrate deploy) — lihat bakcend-lab/prisma.config.ts
+      DATABASE_URL: mysql://${DB_USER}:${DB_PASSWORD}@db:3306/${DB_NAME}
+      # Untuk runtime Bun — lihat bakcend-lab/lib/prisma.ts (port default 3306)
+      DATABASE_HOST: db
+      DATABASE_USER: ${DB_USER}
+      DATABASE_PASSWORD: ${DB_PASSWORD}
+      DATABASE_NAME: ${DB_NAME}
+      CORS_ORIGIN: https://lab.smkmiftahulkhaer.my.id
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-laboratorium-schedule-frontend:latest}
+    build:
+      context: ./frontend-lab
+      args:
+        VITE_API_URL: https://api.smkmiftahulkhaer.my.id
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:
