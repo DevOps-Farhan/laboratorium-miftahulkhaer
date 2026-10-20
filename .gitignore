@@ -9,7 +9,7 @@
 .env
 .env.*
 !.env.example
-!.env.prod.example
+# .env.prod.example
 
 # File konfigurasi lokal yang sering memuat secret
 .env.local
@@ -17,6 +17,7 @@
 .env.test.local
 .env.production.local
 .env.*.local
+.env.prod.example
 
 # ------------------------------------------------------------
 # 2. Kunci, Sertifikat, dan Kredensial
